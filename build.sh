@@ -13,6 +13,11 @@ then
     source .env
 fi
 
+if [ ! -d decompiled ]
+then
+    ./download.sh
+fi
+
 cp static/* "$output_dir"
 cp -r data "$output_dir"
 cp -r decompiled "$output_dir"
