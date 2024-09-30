@@ -1,6 +1,10 @@
 #!/bin/bash
 set -e
 cd "${0%/*}"
+if [ ! -d decompiled ]
+then
+    ./download.sh
+fi
 rm -rf out
 mkdir -p out
 cp -r decompiled out/raw

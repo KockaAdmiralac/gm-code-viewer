@@ -1,0 +1,75 @@
+name: Deploy to Pages
+on:
+  push:
+    branches: ["uty"]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+# Default to bash
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Checkout UTMT
+        uses: actions/checkout@v4
+        with:
+          repository: krzys-h/UndertaleModTool
+          path: utmt
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 6.0.x
+      - name: Restore UTMT dependencies
+        run: dotnet restore utmt/UndertaleModCli
+      - name: Build UTMT CLI
+        run: dotnet build utmt/UndertaleModCli --no-restore
+      - name: Publish UTMT CLI
+        run: dotnet publish utmt/UndertaleModCli -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=false --output utmtcli
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v1
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: latest
+      - name: Install Node dependencies
+        run: npm install
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: none
+      - name: Build
+        run: ./build.sh
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./out
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v1
