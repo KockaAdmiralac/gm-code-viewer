@@ -84,12 +84,12 @@ def write_index(index: ScriptIndex, output_dir: Path) -> None:
         env = Environment(loader=FileSystemLoader('templates'))
         f.write(env.get_template('index.html').render(
             sections=index.sections,
-            game='Deltarune',
+            game='Undertale Yellow',
             links={
-                'Source code': 'https://github.com/KockaAdmiralac/deltarune-viewer',
+                'Source code': 'https://github.com/KockaAdmiralac/gm-code-viewer/tree/uty',
                 'r/Underminers': 'https://www.reddit.com/r/Underminers/',
-                'TCRF': 'https://tcrf.net/Deltarune',
-                'Wiki': 'https://deltarune.fandom.com/',
+                'TCRF': 'https://tcrf.net/Undertale_Yellow',
+                'Wiki': 'https://undertaleyellow.wiki.gg/',
             },
             cache_version=1
         ))
